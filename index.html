@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tình huống bắt nạt ảo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e3f2fd;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #d32f2f;
+      text-align: center;
+    }
+    .situation {
+      margin-bottom: 25px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .choices button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      background: #64b5f6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .choices button:hover {
+      background: #1976d2;
+    }
+    .result {
+      display: none;
+      background: #fce4ec;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .next-btn {
+      margin-top: 30px;
+      display: none;
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .next-btn:hover {
+      background: #388e3c;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Phản ứng với tình huống bắt nạt ảo</h1>
+
+  <div id="situationBox" class="situation"></div>
+
+  <div class="choices" id="choiceButtons"></div>
+
+  <div id="resultBox" class="result"></div>
+
+  <button id="nextBtn" class="next-btn" onclick="loadNext()">👉 Tình huống tiếp theo</button>
+</div>
+
+<script>
+const situations = [
+  {
+    text: `Tình huống 1: Trên mạng xã hội lớp, có bài đăng chế nhạo bạn An vì nói lắp, kèm hình ảnh cắt ghép. Bạn thấy nhiều người đang thả haha và bình luận cười cợt. Bạn sẽ làm gì?`,
+    options: [
+      "Lướt qua, không bình luận gì",
+      "Thả haha theo",
+      "Báo cáo bài viết và nhắn tin an ủi bạn An"
+    ],
+    outcomes: [
+      "😐 Bạn im lặng. An cảm thấy cô đơn và tổn thương nặng nề. <br><strong>Lời khuyên:</strong> Đừng coi im lặng là trung lập, đó có thể là đồng lõa.",
+      "😞 Bạn thả haha. Người khác thấy bạn ủng hộ, và tiếp tục bắt nạt. <br><strong>Lời khuyên:</strong> Mỗi hành động nhỏ đều để lại hậu quả.",
+      "💪 Bạn báo cáo bài viết và động viên An. An cảm thấy bớt cô đơn. <br><strong>Lời khuyên:</strong> Một người đứng lên có thể thay đổi cả cuộc trò chuyện."
+    ]
+  },
+  {
+    text: `Tình huống 2: Trong nhóm chat lớp, bạn thấy một người gửi ảnh riêng tư của bạn Bảo và bình luận mang tính xúc phạm. Mọi người đang bàn tán. Bạn sẽ làm gì?`,
+    options: [
+      "Rời khỏi nhóm để không dính dáng",
+      "Chụp màn hình và gửi cho người khác để cảnh báo",
+      "Báo với giáo viên chủ nhiệm và nhắn tin cảnh báo người đăng"
+    ],
+    outcomes: [
+      "😐 Bạn rời nhóm. Bảo bị tổn thương mà không ai giúp đỡ. <br><strong>Lời khuyên:</strong> Rút lui không phải lúc nào cũng an toàn – đó có thể là bỏ mặc nạn nhân.",
+      "😟 Bạn chia sẻ hình ảnh tiếp tục. Dù bạn không có ý xấu, điều đó lan truyền nội dung tiêu cực. <br><strong>Lời khuyên:</strong> Không nên lan truyền hình ảnh nhạy cảm.",
+      "💡 Bạn hành động đúng cách. Giáo viên can thiệp kịp thời. <br><strong>Lời khuyên:</strong> Báo cáo và can thiệp đúng cách là hành động dũng cảm."
+    ]
+  }
+];
+
+let currentIndex = 0;
+
+function loadSituation() {
+  const situation = situations[currentIndex];
+  document.getElementById("situationBox").innerHTML = situation.text;
+
+  const choices = situation.options.map((option, i) => 
+    `<button onclick="showResult(${i})">${option}</button>`).join("");
+  document.getElementById("choiceButtons").innerHTML = choices;
+
+  document.getElementById("resultBox").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+}
+
+function showResult(index) {
+  const result = situations[currentIndex].outcomes[index];
+  document.getElementById("resultBox").innerHTML = result;
+  document.getElementById("resultBox").style.display = "block";
+
+  if (currentIndex < situations.length - 1) {
+    document.getElementById("nextBtn").style.display = "inline-block";
+  } else {
+    document.getElementById("nextBtn").style.display = "none";
+  }
+}
+
+function loadNext() {
+  currentIndex++;
+  loadSituation();
+}
+
+loadSituation();
+</script>
+
+</body>
+</html>
