@@ -1,150 +1,324 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Tình huống bắt nạt ảo</title>
+<head>  
+  <meta charset="UTF-8" />
+  <title>Trắc nghiệm Bắt nạt trực tuyến</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #e3f2fd;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #d32f2f;
+      background-color: #f0f8ff;
       text-align: center;
-    }
-    .situation {
-      margin-bottom: 25px;
-      font-size: 18px;
-      line-height: 1.6;
-    }
-    .choices button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      background: #64b5f6;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .choices button:hover {
-      background: #1976d2;
-    }
-    .result {
-      display: none;
-      background: #fce4ec;
       padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
-      font-size: 16px;
     }
-    .next-btn {
-      margin-top: 30px;
+    .question {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #2c3e50;
+      text-shadow: 1px 1px 2px #bdc3c7;
+    }
+    .question::before {
+      content: "❓ ";
+      font-size: 1.5em;
+    }
+    .options button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #e0f7fa;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #b2ebf2;
+    }
+    #feedback {
+      font-weight: bold;
+      margin: 10px;
+      font-size: 1.1em;
+      color: #00796b;
+      min-height: 2em;
+      white-space: pre-line; /* để xuống dòng \n */
+    }
+    #score {
+      font-size: 1.2em;
+      color: green;
+      margin-bottom: 20px;
+    }
+    #next-btn {
       display: none;
-      background: #4caf50;
+      margin: 15px auto;
+      padding: 10px 20px;
+      font-size: 1.1em;
+      background-color: #4caf50;
       color: white;
       border: none;
-      padding: 12px 25px;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 16px;
+      transition: background-color 0.3s ease;
     }
-    .next-btn:hover {
-      background: #388e3c;
+    #next-btn:hover {
+      background-color: #388e3c;
+    }
+    #congrats {
+      display: none;
+      font-size: 1.5em;
+      color: #ff4081;
+      animation: popin 1s ease-out;
+    }
+    #congrats img {
+      max-width: 300px;
+      margin-top: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    @keyframes popin {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Phản ứng với tình huống bắt nạt ảo</h1>
+  <!-- Nhạc nền -->
+  <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/29/audio_2625e79889.mp3?filename=happy-upbeat-funk-dance-11695.mp3" autoplay loop muted></audio>
 
-  <div id="situationBox" class="situation"></div>
+  <div id="quiz"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" onclick="nextQuestion()">Câu hỏi tiếp theo ➡️</button>
+  <div id="score">Điểm hiện tại: 0</div>
+  <div id="congrats">
+    🎉 Chúc mừng bạn đã hoàn thành trắc nghiệm! 🎉<br>
+    <strong>Điểm tổng của bạn là: <span id="final-score"></span> điểm!</strong><br><br>
+    <div id="final-message" style="font-size:1.2em; margin: 10px 0;"></div>
+    <br>
+    <img src="https://media.tenor.com/9U1sBtZ5YBMAAAAC/cute-panda-dance.gif" alt="Panda Dance" />
+  </div>
 
-  <div class="choices" id="choiceButtons"></div>
+  <script>
+    const questions = [
+      {
+        question: "1. Một học sinh nam thuộc cộng đồng LGBT+ bị các bạn nam khác trong lớp công khai  lập group FB với tiêu đề “Anti Pê đê lớp 8A”. Và bạn được mời thiam gia group chat ấy. Bạn chọn hành động như thế nào?",
+        options: [
+          "😶 Tham gia xem thử có gì ",
+          "🗣 Gửi lời động viên bạn nam",
+          "📩 Báo cáo group đó với thầy cô"
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "2. Bạn bị đưa vào một group chat kỳ lạ, nơi các thành viên chửi bới và bôi nhọ một người khác không có mặt. Bạn hành động như thế nào?",
+        options: [
+          "🙊 “Lót dép hóng” vì tò mò ",
+          "🚪 Tìm cách thông báo cho bạn bị nói xấu để họ biết ",
+          "🚩 Nhắn riêng cho các bạn trưởng, phó nhóm và hỏi rõ ràng tình hình. Giải thích cho họ hậu quả về những việc họ đang làm. Bởi điều đó không chỉ ảnh hưởng nạn nhân, bản thân họ, nó còn ảnh hưởng nhiều người khác. Ví dụ như những người vô tình bị add vào group sẽ bị mang tiếng xấu."
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "3. Trong nhóm chat lớp, bạn thấy một người gửi ảnh riêng tư của bạn Bảo và bình luận mang tính xúc phạm. Mọi người đang bàn tán về nó. Bạn sẽ làm gì?",
+        options: [
+          "🙈 Chia sẻ hình ảnh của Bảo ra ngoài, điều này sẽ vui lắm đây ",
+          "🤔 Rời khỏi nhóm để không dính dáng gì đến chuyện đó ",
+          "🛡 Nhắn cho một vài người bạn khác trong lớp để khuyên họ cùng đứng ra ngăn chặn các bạn lan truyền hình ảnh riêng tư của Bảo cùng mình "
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "4. Trên trang confession của trường, có bài viết bịa chuyện về một bạn là “bắt cá hai tay” khiến bạn ấy bị đồn đoán và xa lánh. Bạn biết rõ người đó bị vu oan. Bạn sẽ...?",
+        options: [
+          "😂 Lướt qua vì không liên quan đến mình ",
+          "🙄 Nhắn tin động viên và khuyên bạn ấy lên tiếng đính chính",
+          "🛑 Comment bảo vệ bạn ấy "
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "5. Story Instagram của một bạn trong lớp kêu gọi vote ai là \"thánh ở dơ\", tuy nhiên các lựa chọn chỉ có tên bạn An kèm ảnh mờ. Rõ ràng đây là tình huống bắt nạt trực tuyến cố gắng nhắm vào An. Bạn sẽ làm gì?",
+        options: [
+          "🤷♂️ Vote cho vui ",
+          "📱 Không vote, không ý kiến ",
+          "📢 Nhắn riêng khuyên chủ story gỡ xuống "
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "6. Các bạn trong nhóm bạn chơi chung bàn nhau tạo một tài khoản giống y hệt bạn Quốc nhắn tin khiếm nhã cho người khác.Bạn sẽ...?",
+        options: [
+          "👀 Góp thêm vài câu để các bạn diễn cho giống.",
+          "🙃 Không nói gì, đợi người khác xử lý ",
+          "🧠 Gửi tin nhắn cảnh báo người bị bắt nạt và báo cáo tài khoản giả "
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "7. Một bài post ẩn danh đăng : “Nghe đồn ai đó bị đuổi học vì ăn cắp điện thoại trong lớp. Ghê thật!” Các bình luận bên dưới bắt đầu bàn tán xôn xao.Bạn biết rõ bạn đó phải nghỉ học vì nhà thiếu điều kiện. Bạn sẽ…?",
+        options: [
+          "😬 Hùa theo, vì bạn đó là đối tượng bị tẩy chay mà",
+          "😐 Lướt nhẹ như chưa thấy gì.",
+          "🫶 Nhắn tin hỏi thăm và bình luận bảo vệ bạn đó."
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "8. Bạn Q vì có hiềm khích với bạn B nên đã sử dụng Face Swap để ghép mặt bạn B vào ảnh \"tấu hài\" , nhưng ảnh trông phản cảm, dễ bị hiểu sai.",
+        options: [
+          "🙄 React haha và gửi cho đứa bạn thân.",
+          "👎 Lướt cho qua, không muốn dính vào mấy chuyện nhảm.",
+          "📨 Nhắn riêng Q. là làm vậy hơi quá, nhắc nhở bạn gỡ ảnh để không gây ảnh hưởng người khác "
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "9. Bạn vô tình xem được livestream bạn A đang nói xấu, phát ngôn xúc phạm bạn B. Không những thế, bạn A còn kêu gọi những người đang xem livestream tẩy chay bạn B. Bạn sẽ làm gì?",
+        options: [
+          "😬 Hùa theo các bạn để tẩy chay B",
+          "📲 Không tham gia tẩy chay, rời khỏi livestream và báo cáo nội dung sai trái.",
+          "🧾 Dựng lại một video ngắn với thông điệp tích cực để bảo vệ bạn B, phơi bày tác hại của bắt nạt và kêu gọi mọi người lan tỏa sự tử tế- như một \"livestream phản đòn\" nhưng bằng yêu thương."
+        ],
+        points: [25, 50, 100]
+      },
+      {
+        question: "10. 📱 Mỗi đêm, An đều nhận được tin nhắn nặc danh với nội dung như: “Mày sẽ hối hận đấy”, “Đừng để tao ra tay”, kèm biểu tượng ☠️ hoặc 🩸. An cảm thấy lo lắng, không dám nói với ai. Bạn là người bạn thân nhất của An nên biết chuyện. Bạn sẽ làm gì?",
+        options: [
+          " 🙈 Mình im lặng là tốt nhất. Dính vào chỉ rắc rối ",
+          "😐 An ủi An và cho bạn lời khuyên giải quyết như lưu lại bằng chứng để báo với phụ huynh và cơ quan chức năng ",
+          "🙅 Có lẽ An đã bị người nặc danh biết được bí mật của bạn, nói với An : \" Tớ có thể giúp cậu báo cáo ẩn danh hoặc đưa thông tin qua một tài khoản không liên quan đến cậu. Sau đó gửi bằng chứng tới giáo viên và báo cáo người nặc danh với nền tảng họ đang dùng\" "
 
-  <div id="resultBox" class="result"></div>
+        ],
+        points: [25, 50, 100]
+      }
+    ];
 
-  <button id="nextBtn" class="next-btn" onclick="loadNext()">👉 Tình huống tiếp theo</button>
-</div>
+    const feedbackMessages = [
+      [
+        "🤔 Hành động này đồng nghĩa với tiếp tay cho điều xấu. Bạn hãy đặt mình vào vị trí của bạn ấy nhé. Mỗi cá thể đều có sự khác biệt mà, phải không? Sao ta không thể tôn trọng sự khác biệt đó như cách ta tôn trọng chính bản thân mình?",
+        "👍 Lời động viên sẽ giúp bạn nam đó cảm thấy được quan tâm!",
+        "🌟 Báo cáo với thầy cô là hành động rất dũng cảm và đúng đắn! Bạn đang ngăn chặn sự kì thị giới"
+      ],
+      [
+        "😕 Tò mò có thể khiến câu chuyện bị đồn đại nhiều hơn, dù chưa chắc đó là sự thật. Bạn muốn mình trở thành người gián tiếp khiến người khác tổn thương sao?",
+      "👌 Bạn đã phần nào giúp đỡ nạn nhân .Nhưng hãy an ủi thêm bạn ấy nếu có thể nhé!!",
+        "👏 Well done!"
+      ],
+      [
+        "😟 Bạn đang hành động thiếu suy nghĩ, nếu bạn là Bảo, bạn có vui không nè?",
+        "💡 😐 Bạn rời nhóm. Bảo bị tổn thương mà không ai giúp đỡ.",
+        "💪 Bạn hành động đúng cách. Tiếp tục phát huy nhé!"
+      ],
+      [
+       "😂 Bạn vừa tham gia Cuộc thi né drama toàn trường và đạt giải... không giúp được ai cả. Tin đồn là như khói – lướt qua không dập, nó bay khắp nơi đấy!",
+        "🙅 Hành động của bạn thật ấm áp, hãy luôn là người ấm áp như vậy nhé!",
+        "🛑 Bạn rất đáng khen!"
+      ],
+      [
+        "😐 Đôi khi niềm vui của bản thân là chuyện buồn của người khác. Bạn hãy suy nghĩ kĩ nhé!",
+        " 🤫 Bạn yên lặng, còn An thì ê chề. ",
+        " 🧼 Bạn vừa lau đi một chuyện dơ… cả nghĩa đen lẫn nghĩa bóng"
+      ],
+      [
+        " 🎭 Diễn sâu quá rồi! Nhưng đây không phải phim hài – là danh dự của người ta đấy!",
+        " 🪑 Ngồi ghế khán giả – nhưng đây không phải rạp chiếu phim đâu!",
+        " 🕵️ Thám tử nghĩa hiệp chính là bạn đó! "
+      ],
+      [
+        "😅 Chỉ trẻ con mới hùa theo thôi nhé!",
+        " 🦗 Bạn im lặng. Còn tin đồn thì… kêu vang như dế kêu trong vở kiểm tra điểm 2",
+        " 🧡 Bạn có thể không xoá hết tin đồn, nhưng ít nhất đã không để nó đốt cháy một người vô tội."
+      ],
+      [
+        " 🥴 Cười tí nhưng bạn đã khiến bạn B khó xử đấy. App AI không có lỗi – người dùng thiếu ý mới đáng ngại.",
+        "😶 Bạn im lặng, nhưng AI thì đang làm việc ngoài tầm kiểm soát. “Nhảm” với bạn, nhưng là nhục với người ta.",
+        " 👏 Bạn không cần chống AI – chỉ cần chống lại việc dùng AI để làm hại người thật."
+      ],
+      [
+        "😕 Thật đáng buồn vì bạn chưa nhận thức được hậu quả",
+        "Xin cúi đầu trước pha xử lý đi vào lòng người! Không drama, không hùa theo – bạn chọn cách rời đi và bấm report như một chiến binh mạng chính hiệu!💻🛡️",
+        " Bạn là người có trái tim ấm áp, nhưng hãy khéo léo để cộng đồng mạng không quay lại bạo lực mạng bạn A nhé!"
+      ],
+      [
+        "😅",
+        " Hành vi người ngoài cuộc tích cực. Well done!",
+        "🙌 Lên tiếng giúp ngăn chặn bắt nạt, rất dũng cảm!"
+      ]
+    ];
 
-<script>
-const situations = [
-  {
-    text: `Tình huống 1: Trên mạng xã hội lớp, có bài đăng chế nhạo bạn An vì nói lắp, kèm hình ảnh cắt ghép. Bạn thấy nhiều người đang thả haha và bình luận cười cợt. Bạn sẽ làm gì?`,
-    options: [
-      "Lướt qua, không bình luận gì",
-      "Thả haha theo",
-      "Báo cáo bài viết và nhắn tin an ủi bạn An"
-    ],
-    outcomes: [
-      "😐 Bạn im lặng. An cảm thấy cô đơn và tổn thương nặng nề. <br><strong>Lời khuyên:</strong> Đừng coi im lặng là trung lập, đó có thể là đồng lõa.",
-      "😞 Bạn thả haha. Người khác thấy bạn ủng hộ, và tiếp tục bắt nạt. <br><strong>Lời khuyên:</strong> Mỗi hành động nhỏ đều để lại hậu quả.",
-      "💪 Bạn báo cáo bài viết và động viên An. An cảm thấy bớt cô đơn. <br><strong>Lời khuyên:</strong> Một người đứng lên có thể thay đổi cả cuộc trò chuyện."
-    ]
-  },
-  {
-    text: `Tình huống 2: Trong nhóm chat lớp, bạn thấy một người gửi ảnh riêng tư của bạn Bảo và bình luận mang tính xúc phạm. Mọi người đang bàn tán. Bạn sẽ làm gì?`,
-    options: [
-      "Rời khỏi nhóm để không dính dáng",
-      "Chụp màn hình và gửi cho người khác để cảnh báo",
-      "Báo với giáo viên chủ nhiệm và nhắn tin cảnh báo người đăng"
-    ],
-    outcomes: [
-      "😐 Bạn rời nhóm. Bảo bị tổn thương mà không ai giúp đỡ. <br><strong>Lời khuyên:</strong> Rút lui không phải lúc nào cũng an toàn – đó có thể là bỏ mặc nạn nhân.",
-      "😟 Bạn chia sẻ hình ảnh tiếp tục. Dù bạn không có ý xấu, điều đó lan truyền nội dung tiêu cực. <br><strong>Lời khuyên:</strong> Không nên lan truyền hình ảnh nhạy cảm.",
-      "💡 Bạn hành động đúng cách. Giáo viên can thiệp kịp thời. <br><strong>Lời khuyên:</strong> Báo cáo và can thiệp đúng cách là hành động dũng cảm."
-    ]
-  }
-];
+    let currentQuestion = 0;
+    let totalScore = 0;
+    let musicStarted = false;
+    let answered = false;
 
-let currentIndex = 0;
+    function showQuestion() {
+      answered = false;
+      const q = questions[currentQuestion];
+      const quizDiv = document.getElementById('quiz');
+      let html = `<div class='question'>${q.question}</div><div class='options'>`;
+      q.options.forEach((opt, index) => {
+        html += `<button onclick="selectOption(${index})">${opt}</button>`;
+      });
+      html += `</div>`;
+      quizDiv.innerHTML = html;
 
-function loadSituation() {
-  const situation = situations[currentIndex];
-  document.getElementById("situationBox").innerHTML = situation.text;
+      document.getElementById('feedback').innerText = '';
+      document.getElementById('next-btn').style.display = 'none';
+    }
 
-  const choices = situation.options.map((option, i) => 
-    `<button onclick="showResult(${i})">${option}</button>`).join("");
-  document.getElementById("choiceButtons").innerHTML = choices;
+    function selectOption(index) {
+      if (answered) return; // tránh chọn nhiều lần
+      answered = true;
 
-  document.getElementById("resultBox").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-}
+      if (!musicStarted) {
+        const bgMusic = document.getElementById('bg-music');
+        bgMusic.muted = false;
+        bgMusic.play();
+        musicStarted = true;
+      }
 
-function showResult(index) {
-  const result = situations[currentIndex].outcomes[index];
-  document.getElementById("resultBox").innerHTML = result;
-  document.getElementById("resultBox").style.display = "block";
+      const scoreGained = questions[currentQuestion].points[index];
+      totalScore += scoreGained;
 
-  if (currentIndex < situations.length - 1) {
-    document.getElementById("nextBtn").style.display = "inline-block";
-  } else {
-    document.getElementById("nextBtn").style.display = "none";
-  }
-}
+      // Disable all option buttons khi đã chọn
+      const buttons = document.querySelectorAll('.options button');
+      buttons.forEach(btn => btn.disabled = true);
 
-function loadNext() {
-  currentIndex++;
-  loadSituation();
-}
+      document.getElementById('feedback').innerText = 
+        `+${scoreGained} điểm cho lựa chọn này! 🎯\n${feedbackMessages[currentQuestion][index]}`;
 
-loadSituation();
-</script>
+      document.getElementById('score').innerText = `Điểm hiện tại: ${totalScore}`;
+      document.getElementById('next-btn').style.display = 'inline-block';
+    }
 
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        document.getElementById('quiz').style.display = 'none';
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('score').style.display = 'none';
+        document.getElementById('congrats').style.display = 'block';
+        document.getElementById('final-score').innerText = totalScore;
+
+        const finalMsgDiv = document.getElementById('final-message');
+        if (totalScore >= 650) {
+          finalMsgDiv.innerHTML = "🎈 Bạn thật dũng cảm và tuyệt vời! Tiếp tục lan tỏa yêu thương nhé! 🦸♂️🦸♀️";
+        } else {
+          finalMsgDiv.innerHTML = "🌟 Hãy đứng lên đừng chỉ đứng nhìn, bạn nhé! 🤗 Hãy tích cực giúp đỡ người bị bắt nạt hơn nha!";
+        }
+      }
+    }
+
+    showQuestion();
+  </script>
 </body>
 </html>
+
+
+
+
+
+
