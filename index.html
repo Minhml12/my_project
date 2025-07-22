@@ -6,75 +6,113 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f8ff;
+      background: linear-gradient(to bottom right, #e3f2fd, #fce4ec);
       text-align: center;
       padding: 20px;
     }
+
+    #start-screen {
+      margin-top: 100px;
+    }
+
     .question {
-      margin-bottom: 20px;
-      font-size: 1.5em;
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 900px;
+      font-size: 1.7em;
       font-weight: 700;
       color: #2c3e50;
-      text-shadow: 1px 1px 2px #bdc3c7;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-left: 8px solid #ff4081;
+      text-align: left;
+      text-shadow: 1px 1px 1px #d7ccc8;
     }
+
     .question::before {
       content: "❓ ";
-      font-size: 1.5em;
+      font-size: 1.3em;
     }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
     .options button {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      font-size: 1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #e0f7fa;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .options button:hover {
-      background-color: #b2ebf2;
-    }
-    #feedback {
-      font-weight: bold;
-      margin: 10px;
-      font-size: 1.1em;
-      color: #00796b;
-      min-height: 2em;
-      white-space: pre-line; /* để xuống dòng \n */
-    }
-    #score {
-      font-size: 1.2em;
-      color: green;
-      margin-bottom: 20px;
-    }
-    #next-btn {
-      display: none;
-      margin: 15px auto;
-      padding: 10px 20px;
-      font-size: 1.1em;
-      background-color: #4caf50;
-      color: white;
+      width: 90%;
+      max-width: 800px;
+      font-size: 1.3em;
+      padding: 15px 20px;
       border: none;
       border-radius: 12px;
+      background: linear-gradient(to right, #e1f5fe, #b2ebf2);
+      color: #004d40;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .options button:hover {
+      background: linear-gradient(to right, #80deea, #4dd0e1);
+      transform: scale(1.02);
+    }
+
+    #feedback {
+      font-weight: bold;
+      margin: 20px auto;
+      font-size: 1.2em;
+      color: #00796b;
+      min-height: 3em;
+      white-space: pre-line;
+      max-width: 850px;
+      display: none;
+    }
+
+    #score {
+      font-size: 1.3em;
+      color: #388e3c;
+      margin: 10px 0;
+      display: none;
+    }
+
+    #next-btn {
+      display: none;
+      margin-top: 25px;
+      padding: 12px 30px;
+      font-size: 1.2em;
+      font-weight: 600;
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 15px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
+
     #next-btn:hover {
-      background-color: #388e3c;
+      background-color: #e91e63;
     }
+
     #congrats {
       display: none;
-      font-size: 1.5em;
-      color: #ff4081;
+      font-size: 1.6em;
+      color: #d81b60;
       animation: popin 1s ease-out;
     }
+
     #congrats img {
       max-width: 300px;
       margin-top: 20px;
       border-radius: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
+
     @keyframes popin {
       from { transform: scale(0); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -86,10 +124,29 @@
   <!-- Nhạc nền -->
   <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/29/audio_2625e79889.mp3?filename=happy-upbeat-funk-dance-11695.mp3" autoplay loop muted></audio>
 
-  <div id="quiz"></div>
+  <!-- Màn hình bắt đầu -->
+  <div id="start-screen">
+    <h1>🎮 Trắc nghiệm: Bạn có là người ngoài cuộc tích cực?</h1>
+    <p>Nhấn vào nút dưới đây để bắt đầu!</p>
+    <button onclick="startQuiz()" style="
+      font-size: 1.4em;
+      padding: 15px 30px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+      🚀 Bắt đầu
+    </button>
+  </div>
+
+  <!-- Nội dung quiz -->
+  <div id="quiz" style="display: none;"></div>
   <div id="feedback"></div>
-  <button id="next-btn" onclick="nextQuestion()">Câu hỏi tiếp theo ➡️</button>
+  <button id="next-btn" onclick="nextQuestion()">➡️ Câu hỏi tiếp theo</button>
   <div id="score">Điểm hiện tại: 0</div>
+
   <div id="congrats">
     🎉 Chúc mừng bạn đã hoàn thành trắc nghiệm! 🎉<br>
     <strong>Điểm tổng của bạn là: <span id="final-score"></span> điểm!</strong><br><br>
@@ -97,11 +154,10 @@
     <br>
     <img src="https://media.tenor.com/9U1sBtZ5YBMAAAAC/cute-panda-dance.gif" alt="Panda Dance" />
   </div>
-
-  <script>
+<script>
     const questions = [
       {
-        question: "1. Một học sinh nam thuộc cộng đồng LGBT+ bị các bạn nam khác trong lớp công khai  lập group FB với tiêu đề “Anti Pê đê lớp 8A”. Và bạn được mời thiam gia group chat ấy. Bạn chọn hành động như thế nào?",
+        question: "1. Một học sinh nam thuộc cộng đồng LGBT+ bị các bạn nam khác trong lớp công khai  lập group FB với tiêu đề “Anti Pê đê lớp 8A”. Và bạn được mời tham gia group chat ấy. Bạn chọn hành động như thế nào?",
         options: [
           "😶 Tham gia xem thử có gì ",
           "🗣 Gửi lời động viên bạn nam",
@@ -245,11 +301,18 @@
         "🙌 Lên tiếng giúp ngăn chặn bắt nạt, rất dũng cảm!"
       ]
     ];
-
-    let currentQuestion = 0;
+ let currentQuestion = 0;
     let totalScore = 0;
     let musicStarted = false;
     let answered = false;
+
+    function startQuiz() {
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('quiz').style.display = 'block';
+      document.getElementById('feedback').style.display = 'block';
+      document.getElementById('score').style.display = 'block';
+      showQuestion();
+    }
 
     function showQuestion() {
       answered = false;
@@ -267,7 +330,7 @@
     }
 
     function selectOption(index) {
-      if (answered) return; // tránh chọn nhiều lần
+      if (answered) return;
       answered = true;
 
       if (!musicStarted) {
@@ -280,11 +343,10 @@
       const scoreGained = questions[currentQuestion].points[index];
       totalScore += scoreGained;
 
-      // Disable all option buttons khi đã chọn
       const buttons = document.querySelectorAll('.options button');
       buttons.forEach(btn => btn.disabled = true);
 
-      document.getElementById('feedback').innerText = 
+      document.getElementById('feedback').innerText =
         `+${scoreGained} điểm cho lựa chọn này! 🎯\n${feedbackMessages[currentQuestion][index]}`;
 
       document.getElementById('score').innerText = `Điểm hiện tại: ${totalScore}`;
@@ -311,14 +373,7 @@
         }
       }
     }
-
-    showQuestion();
   </script>
 </body>
 </html>
-
-
-
-
-
 
